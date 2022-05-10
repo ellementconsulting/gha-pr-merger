@@ -1,0 +1,2 @@
+requests~=2.27
+GitPython~=3.1
