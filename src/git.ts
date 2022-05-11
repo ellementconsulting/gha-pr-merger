@@ -50,11 +50,21 @@ export const prepareBranch = async (
 export const mergePulls = async (pulls: Pull[], workingDir: string) => {
   if (pulls.length > 0) {
     for (let pull of pulls) {
-      await git.merge({
-        fs,
-        dir: workingDir,
-        theirs: `remotes/origin/${pull.head.ref}`,
-      })
+      try {
+        await git.merge({
+          fs,
+          dir: workingDir,
+          theirs: `remotes/origin/${pull.head.ref}`,
+        })
+      } catch (ex) {
+        if (ex instanceof git.Errors.MergeNotSupportedError) {
+          console.log(ex)
+          core.setFailed(`Unable to merge branch '${pull.head.ref}'`)
+          process.exit(1)
+        } else {
+          throw ex
+        }
+      }
       console.log(`Merged #${pull.number} ${pull.title}`)
     }
   }

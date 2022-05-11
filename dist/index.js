@@ -202,11 +202,23 @@ exports.prepareBranch = prepareBranch;
 const mergePulls = (pulls, workingDir) => __awaiter(void 0, void 0, void 0, function* () {
     if (pulls.length > 0) {
         for (let pull of pulls) {
-            yield isomorphic_git_1.default.merge({
-                fs: fs_1.default,
-                dir: workingDir,
-                theirs: `remotes/origin/${pull.head.ref}`,
-            });
+            try {
+                yield isomorphic_git_1.default.merge({
+                    fs: fs_1.default,
+                    dir: workingDir,
+                    theirs: `remotes/origin/${pull.head.ref}`,
+                });
+            }
+            catch (ex) {
+                if (ex instanceof isomorphic_git_1.default.Errors.MergeNotSupportedError) {
+                    console.log(ex);
+                    core.setFailed(`Unable to merge branch '${pull.head.ref}'`);
+                    process.exit(1);
+                }
+                else {
+                    throw ex;
+                }
+            }
             console.log(`Merged #${pull.number} ${pull.title}`);
         }
     }
