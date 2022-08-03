@@ -1,0 +1,35 @@
+name: "Merge"
+description: "Merges all pull requests with a defined label into a single branch"
+
+inputs:
+  token:
+    description: "GitHub Token with commit permissions to the repository"
+    required: true
+
+  repository:
+    description: "Optional repository to work with. Token must have commit access. If not provided, the repository running the action will be used."
+    required: false
+
+  base_branch:
+    description: "The base branch for the merges."
+    required: true
+
+  target_branch:
+    description: "The target branch for the merges. After merging, the local branch will be force pushed to this branch. Must be a different branch than the base branch."
+    required: true
+
+  label:
+    description: "Only pulls with this label will be merged."
+    required: true
+
+  committer_name:
+    description: "Optional name to use when committing the merges. If not supplied, the default name will be used."
+    required: false
+
+  push:
+    description: "Force pushes the resulting branch back to origin after merging. If not supplied, the branch will not be pushed."
+    required: false
+
+runs:
+  using: "node16"
+  main: "dist/index.js"
